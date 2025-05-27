@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Counter - How Long Have You Lived</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff6b6b;
+        }
+
+        .time-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        button {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        .counter-section {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .birth-info {
+            background: rgba(255, 107, 107, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .time-unit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 25px 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .time-unit:hover {
+            transform: translateY(-5px);
+        }
+
+        .time-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .time-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+        }
+
+        .celebration {
+            font-size: 1.5rem;
+            margin-top: 20px;
+        }
+
+        .reset-btn {
+            background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            margin-left: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .time-inputs {
+                grid-template-columns: 1fr;
+            }
+            
+            .time-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎂 Life Counter</h1>
+        
+        <div class="input-section" id="inputSection">
+            <p style="margin-bottom: 25px; color: #666; font-size: 1.1rem;">
+                Enter your birth details to see exactly how long you've been alive!<br>
+                <small style="color: #888;">Calculates EXACT total seconds lived (accounting for all calendar variations)<br>then converts using 30-day months and 365-day years</small>
+            </p>
+            
+            <div class="input-group">
+                <div class="input-field">
+                    <label for="birthDate">Birth Date:</label>
+                    <input type="date" id="birthDate" required>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <div class="input-field">
+                    <label>Birth Time:</label>
+                    <div class="time-inputs">
+                        <div>
+                            <label for="birthHour">Hour:</label>
+                            <select id="birthHour">
+                                <option value="">--</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="birthMinute">Minute:</label>
+                            <select id="birthMinute">
+                                <option value="">--</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="birthSecond">Second:</label>
+                            <select id="birthSecond">
+                                <option value="0">00</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="startLifeCounter()">Start Life Counter! 🚀</button>
+        </div>
+
+        <div class="counter-section" id="counterSection">
+            <div class="birth-info" id="birthInfo"></div>
+            
+            <div class="counter-grid">
+                <div class="time-unit">
+                    <span class="time-number" id="years">0</span>
+                    <span class="time-label">Years</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-number" id="months">0</span>
+                    <span class="time-label">Months</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-number" id="days">0</span>
+                    <span class="time-label">Days</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-number" id="hours">0</span>
+                    <span class="time-label">Hours</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-number" id="minutes">0</span>
+                    <span class="time-label">Minutes</span>
+                </div>
+                <div class="time-unit">
+                    <span class="time-number" id="seconds">0</span>
+                    <span class="time-label">Seconds</span>
+                </div>
+            </div>
+            
+            <div class="celebration">
+                🌟 Every second is a gift! 🌟
+            </div>
+            
+            <button onclick="resetCounter()" class="reset-btn">Enter New Birth Date</button>
+        </div>
+    </div>
+
+    <script>
+        let birthDateTime;
+        let counterInterval;
+
+        // Populate time dropdowns
+        function populateTimeSelects() {
+            const hourSelect = document.getElementById('birthHour');
+            const minuteSelect = document.getElementById('birthMinute');
+            const secondSelect = document.getElementById('birthSecond');
+
+            // Hours (0-23)
+            for (let i = 0; i < 24; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i.toString().padStart(2, '0');
+                hourSelect.appendChild(option);
+            }
+
+            // Minutes (0-59)
+            for (let i = 0; i < 60; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i.toString().padStart(2, '0');
+                minuteSelect.appendChild(option);
+            }
+
+            // Seconds (0-59)
+            for (let i = 0; i < 60; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i.toString().padStart(2, '0');
+                secondSelect.appendChild(option);
+            }
+        }
+
+        function startLifeCounter() {
+            const birthDate = document.getElementById('birthDate').value;
+            const birthHour = document.getElementById('birthHour').value || '0';
+            const birthMinute = document.getElementById('birthMinute').value || '0';
+            const birthSecond = document.getElementById('birthSecond').value || '0';
+
+            if (!birthDate) {
+                alert('Please enter your birth date!');
+                return;
+            }
+
+            // Create birth datetime
+            birthDateTime = new Date(${birthDate}T${birthHour.padStart(2, '0')}:${birthMinute.padStart(2, '0')}:${birthSecond.padStart(2, '0')});
+            
+            // Check if birth date is in the future
+            if (birthDateTime > new Date()) {
+                alert('Birth date cannot be in the future!');
+                return;
+            }
+
+            // Show birth info
+            const birthInfo = document.getElementById('birthInfo');
+            birthInfo.innerHTML = `
+                <strong>You were born on:</strong><br>
+                ${birthDateTime.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                })} at ${birthDateTime.toLocaleTimeString()}
+            `;
+
+            // Hide input section and show counter
+            document.getElementById('inputSection').style.display = 'none';
+            document.getElementById('counterSection').style.display = 'block';
+
+            // Start the counter
+            updateLifeCounter();
+            counterInterval = setInterval(updateLifeCounter, 1000);
+        }
+
+        function updateLifeCounter() {
+            const now = new Date();
+            
+            // Calculate EXACT total milliseconds lived
+            const totalMilliseconds = now.getTime() - birthDateTime.getTime();
+            
+            // Convert to exact total seconds
+            const totalSeconds = Math.floor(totalMilliseconds / 1000);
+            
+            // Now convert total seconds to years, months, days, hours, minutes, seconds
+            // Using: 1 year = 365 days, 1 month = 30 days, 1 day = 24 hours, etc.
+            
+            const SECONDS_PER_MINUTE = 60;
+            const SECONDS_PER_HOUR = 60 * 60;
+            const SECONDS_PER_DAY = 24 * 60 * 60;
+            const SECONDS_PER_MONTH = 30 * 24 * 60 * 60; // 30 days per month
+            const SECONDS_PER_YEAR = 365 * 24 * 60 * 60; // 365 days per year
+            
+            // Calculate each unit
+            const years = Math.floor(totalSeconds / SECONDS_PER_YEAR);
+            const remainingAfterYears = totalSeconds % SECONDS_PER_YEAR;
+            
+            const months = Math.floor(remainingAfterYears / SECONDS_PER_MONTH);
+            const remainingAfterMonths = remainingAfterYears % SECONDS_PER_MONTH;
+            
+            const days = Math.floor(remainingAfterMonths / SECONDS_PER_DAY);
+            const remainingAfterDays = remainingAfterMonths % SECONDS_PER_DAY;
+            
+            const hours = Math.floor(remainingAfterDays / SECONDS_PER_HOUR);
+            const remainingAfterHours = remainingAfterDays % SECONDS_PER_HOUR;
+            
+            const minutes = Math.floor(remainingAfterHours / SECONDS_PER_MINUTE);
+            const seconds = remainingAfterHours % SECONDS_PER_MINUTE;
+
+            // Update display
+            document.getElementById('years').textContent = years;
+            document.getElementById('months').textContent = months;
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+            
+            // Add total seconds display and next birthday calculation
+            if (!document.getElementById('totalSeconds')) {
+                const infoDiv = document.createElement('div');
+                infoDiv.innerHTML = `
+                    <div id="totalSeconds" style="
+                        margin-top: 20px;
+                        padding: 15px;
+                        background: rgba(255, 255, 255, 0.9);
+                        border-radius: 10px;
+                        color: #333;
+                        font-weight: bold;
+                        margin-bottom: 15px;
+                    "></div>
+                    <div id="nextBirthday" style="
+                        padding: 20px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        border-radius: 15px;
+                        color: white;
+                        margin-bottom: 15px;
+                    "></div>
+                    <div id="countdown" style="
+                        padding: 15px;
+                        background: rgba(255, 107, 107, 0.1);
+                        border-radius: 10px;
+                        color: #333;
+                        font-weight: bold;
+                    "></div>
+                `;
+                document.querySelector('.counter-grid').after(infoDiv);
+            }
+            
+            document.getElementById('totalSeconds').innerHTML = `
+                <div style="font-size: 1.1rem; margin-bottom: 5px;">📊 Total Seconds Lived:</div>
+                <div style="font-size: 1.5rem; color: #ff6b6b;">${totalSeconds.toLocaleString()}</div>
+            `;
+            
+            // Calculate next birthday (exact age + 1)
+            const nextAge = years + 1;
+            const SECONDS_FOR_NEXT_AGE = nextAge * SECONDS_PER_YEAR;
+            const secondsUntilNextBirthday = SECONDS_FOR_NEXT_AGE - totalSeconds;
+            
+            // Calculate when exactly you'll turn next age
+            const nextBirthdayTime = new Date(birthDateTime.getTime() + (SECONDS_FOR_NEXT_AGE * 1000));
+            
+            // Convert countdown to readable format
+            const countdownYears = Math.floor(secondsUntilNextBirthday / SECONDS_PER_YEAR);
+            const remainingAfterCdYears = secondsUntilNextBirthday % SECONDS_PER_YEAR;
+            
+            const countdownMonths = Math.floor(remainingAfterCdYears / SECONDS_PER_MONTH);
+            const remainingAfterCdMonths = remainingAfterCdYears % SECONDS_PER_MONTH;
+            
+            const countdownDays = Math.floor(remainingAfterCdMonths / SECONDS_PER_DAY);
+            const remainingAfterCdDays = remainingAfterCdMonths % SECONDS_PER_DAY;
+            
+            const countdownHours = Math.floor(remainingAfterCdDays / SECONDS_PER_HOUR);
+            const remainingAfterCdHours = remainingAfterCdDays % SECONDS_PER_HOUR;
+            
+            const countdownMinutes = Math.floor(remainingAfterCdHours / SECONDS_PER_MINUTE);
+            const countdownSeconds = remainingAfterCdHours % SECONDS_PER_MINUTE;
+            
+            document.getElementById('nextBirthday').innerHTML = `
+                <div style="font-size: 1.3rem; margin-bottom: 10px;">🎉 Next Birthday (Age ${nextAge})</div>
+                <div style="font-size: 1.1rem; margin-bottom: 5px;">
+                    <strong>Date:</strong> ${nextBirthdayTime.toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })}
+                </div>
+                <div style="font-size: 1.1rem;">
+                    <strong>Time:</strong> ${nextBirthdayTime.toLocaleTimeString()}
+                </div>
+            `;
+            
+            document.getElementById('countdown').innerHTML = `
+                <div style="font-size: 1.1rem; margin-bottom: 8px;">⏰ Time Until You Turn ${nextAge}:</div>
+                <div style="font-size: 1rem;">
+                    ${countdownMonths} months, ${countdownDays} days, ${countdownHours} hours, ${countdownMinutes} minutes, ${countdownSeconds} seconds
+                </div>
+                <div style="font-size: 0.9rem; margin-top: 5px; opacity: 0.8;">
+                    (${secondsUntilNextBirthday.toLocaleString()} seconds remaining)
+                </div>
+            `;
+        }
+
+        function resetCounter() {
+            if (counterInterval) {
+                clearInterval(counterInterval);
+            }
+            
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('counterSection').style.display = 'none';
+            
+            // Reset form
+            document.getElementById('birthDate').value = '';
+            document.getElementById('birthHour').value = '';
+            document.getElementById('birthMinute').value = '';
+            document.getElementById('birthSecond').value = '0';
+        }
+
+        // Initialize the page
+        populateTimeSelects();
+    </script>
+</body>
+</html>
